@@ -825,7 +825,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }*/
 
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:flutter_application_1/configs/colors.dart';
 import 'package:get/get.dart';
 
@@ -854,14 +854,14 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Image.asset('assets/download.jpeg', height: 150, width: 200),
+              Image.asset('assets/login_bg.jpeg', height: 150, width: 200),
 
               const SizedBox(height: 20),
 
-              /// USERNAME
+              /// EMAIL
               const Align(
                 alignment: Alignment.centerLeft,
-                child: Text("Enter username"),
+                child: Text("Enter email"),
               ),
 
               const SizedBox(height: 8),
@@ -872,8 +872,28 @@ class _LoginScreenState extends State<LoginScreen> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  hintText: "Use email or phone number",
-                  prefixIcon: const Icon(Icons.person),
+                  hintText: "Use email ",
+                  prefixIcon: const Icon(Icons.email),
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text("Enter email"),
+              ),
+
+              const SizedBox(height: 8),
+
+              TextField(
+                controller: usernameController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  hintText: "Use email ",
+                  prefixIcon: const Icon(Icons.email),
                 ),
               ),
 
@@ -899,7 +919,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  hintText: "Enter pin or password here",
+                  hintText: "Enter pin or password ",
                   prefixIcon: const Icon(Icons.lock),
 
                   suffixIcon: IconButton(
@@ -993,6 +1013,211 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+}*/
+
+import 'package:flutter/material.dart';
+import 'package:flutter_application_1/configs/colors.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+TextEditingController usernameController = TextEditingController();
+TextEditingController emailController = TextEditingController();
+TextEditingController passwordController = TextEditingController();
+
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
+class _LoginScreenState extends State<LoginScreen> {
+  bool isPasswordVisible = false;
 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+
+      body: Padding(
+        padding: const EdgeInsets.all(15.0),
+
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Image.asset('assets/login_bg.jpeg', height: 150, width: 200),
+
+              const SizedBox(height: 20),
+
+              /// USERNAME
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text("Enter username"),
+              ),
+
+              const SizedBox(height: 8),
+
+              TextField(
+                controller: usernameController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  hintText: "Enter username",
+                  prefixIcon: const Icon(Icons.person),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              /// EMAIL
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text("Enter email"),
+              ),
+
+              const SizedBox(height: 8),
+
+              TextField(
+                controller: emailController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  hintText: "Use email",
+                  prefixIcon: const Icon(Icons.email),
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              /// PASSWORD
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Enter Password",
+                  style: TextStyle(fontWeight: FontWeight.w700),
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              TextField(
+                controller: passwordController,
+                obscureText: !isPasswordVisible,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  hintText: "Enter pin or password",
+                  prefixIcon: const Icon(Icons.lock),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      isPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        isPasswordVisible = !isPasswordVisible;
+                      });
+                    },
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              /// LOGIN BUTTON (CONNECTED TO BACKEND)
+              GestureDetector(
+                onTap: () async {
+                  String email = emailController.text.trim();
+                  String pass = passwordController.text.trim();
+
+                  if (email.isEmpty || pass.isEmpty) {
+                    Get.snackbar("Error", "All fields are required");
+                    return;
+                  }
+
+                  try {
+                    var url = Uri.parse(
+                      "http://192.168.100.113/habit_api/login.php",
+                    );
+
+                    var response = await http.post(
+                      url,
+                      body: {"email": email, "password": pass},
+                    );
+
+                    var data = json.decode(response.body);
+
+                    if (data["success"] == 1) {
+                      Get.toNamed("/homescreen");
+                    } else {
+                      Get.snackbar(
+                        "Login Failed",
+                        data["message"],
+                        snackPosition: SnackPosition.BOTTOM,
+                      );
+                    }
+                  } catch (e) {
+                    Get.snackbar("Error", "Server not reachable");
+                  }
+                },
+                child: Container(
+                  height: 50,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: primaryColor,
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  child: const Text(
+                    "Login",
+                    style: TextStyle(color: Colors.cyan, fontSize: 16),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              /// SIGNUP ROW
+              Padding(
+                padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
+                child: Row(
+                  children: [
+                    const Text("Don't have an account?"),
+                    const SizedBox(width: 5),
+
+                    GestureDetector(
+                      child: Text(
+                        "Signup",
+                        style: TextStyle(
+                          color: primaryColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      onTap: () {
+                        Get.toNamed("/signup");
+                      },
+                    ),
+
+                    const Spacer(),
+
+                    const Text("Forgot password?"),
+                    const SizedBox(width: 5),
+
+                    const Text(
+                      "Reset",
+                      style: TextStyle(color: Colors.cyanAccent),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

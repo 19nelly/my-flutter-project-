@@ -555,7 +555,7 @@ class _SignupScreenState extends State<SignupScreen> {
             children: [
               const SizedBox(height: 40),
 
-              Image.asset('assets/download.jpeg', height: 150, width: 200),
+              Image.asset('assets/login_bg.jpeg', height: 150, width: 200),
 
               const SizedBox(height: 10),
 
