@@ -1045,6 +1045,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
         child: SingleChildScrollView(
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Image.asset('assets/login_bg.jpeg', height: 150, width: 200),
 
@@ -1132,6 +1133,7 @@ class _LoginScreenState extends State<LoginScreen> {
               /// LOGIN BUTTON (CONNECTED TO BACKEND)
               GestureDetector(
                 onTap: () async {
+                  print("Login button clicked");
                   String email = emailController.text.trim();
                   String pass = passwordController.text.trim();
 
@@ -1142,7 +1144,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   try {
                     var url = Uri.parse(
-                      "http://192.168.100.113/habit_api/login.php",
+                      "http://192.169.100.115/habit_api/login.php",
                     );
 
                     var response = await http.post(
