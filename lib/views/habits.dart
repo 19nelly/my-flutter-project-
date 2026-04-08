@@ -113,7 +113,7 @@ class _HabitsPageState extends State<HabitsPage> {
   }
 }*/
 
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 
 class HabitsPage extends StatefulWidget {
   const HabitsPage({super.key});
@@ -170,6 +170,7 @@ class _HabitsPageState extends State<HabitsPage> {
           children: [
             /// CATEGORY DROPDOWN
             DropdownButtonFormField<String>(
+              // ignore: deprecated_member_use
               value: selectedCategory,
               items: categories.map((category) {
                 return DropdownMenuItem(value: category, child: Text(category));
@@ -235,6 +236,110 @@ class _HabitsPageState extends State<HabitsPage> {
                         ),
                       ),
                       subtitle: Text(habit["category"]),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}*/
+
+import 'package:flutter/material.dart';
+import 'package:flutter_application_1/configs/colors.dart';
+// ignore: unused_import
+import 'package:confetti/confetti.dart';
+import 'package:flutter_application_1/controllers/habitscontroller.dart';
+
+class HabitsPage extends StatefulWidget {
+  const HabitsPage({super.key});
+
+  @override
+  State<HabitsPage> createState() => _HabitsPageState();
+}
+
+class _HabitsPageState extends State<HabitsPage> {
+  final HabitController controller = HabitController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.backgroundBlue,
+      appBar: AppBar(
+        title: const Text("My Habits"),
+        backgroundColor: AppColors.primaryBlue,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            DropdownButtonFormField<String>(
+              // ignore: deprecated_member_use
+              value: controller.selectedCategory,
+              items: controller.categories
+                  .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                  .toList(),
+              onChanged: (value) =>
+                  controller.changeCategory(value!, () => setState(() {})),
+              decoration: InputDecoration(
+                labelText: "Select Category",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: controller.habitController,
+              decoration: InputDecoration(
+                hintText: "Enter habit",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+              ),
+            ),
+            const SizedBox(height: 15),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () => controller.addHabit(() => setState(() {})),
+                child: const Text("Add Habit"),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Expanded(
+              child: ListView.builder(
+                itemCount: controller.habits.length,
+                itemBuilder: (context, index) {
+                  final habit = controller.habits[index];
+                  return Card(
+                    child: ListTile(
+                      leading: Image.asset("assets/habit_icon.png", width: 30),
+                      title: Text(
+                        habit["name"],
+                        style: TextStyle(
+                          color: AppColors.darkBlue,
+                          decoration: habit["done"]
+                              ? TextDecoration.lineThrough
+                              : null,
+                        ),
+                      ),
+                      subtitle: Text(
+                        habit["category"],
+                        style: const TextStyle(color: AppColors.primaryBlue),
+                      ),
+                      trailing: Checkbox(
+                        activeColor: AppColors.primaryBlue,
+                        value: habit["done"],
+                        onChanged: (value) => controller.toggleHabit(
+                          index,
+                          () => setState(() {}),
+                        ),
+                      ),
                     ),
                   );
                 },

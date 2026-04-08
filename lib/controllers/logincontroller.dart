@@ -81,7 +81,7 @@ class LoginController extends GetxController {
   // REAL LOGIN FUNCTION
   Future<bool> login(String email, String password) async {
     var url = Uri.parse(
-      "http://192.168.100.115/habit_api/login.php",
+      "http://192.168.100.108:80/habit_api/login.php",
     ); // your IP
 
     var response = await http.post(
@@ -89,6 +89,7 @@ class LoginController extends GetxController {
       body: {"email": email, "password": password},
     );
 
+    // ignore: avoid_print
     print("RESPONSE: ${response.body}");
 
     var data = json.decode(response.body);

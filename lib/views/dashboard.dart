@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:flutter_application_1/views/habits.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -59,6 +59,84 @@ class DashboardPage extends StatelessWidget {
 
             const SizedBox(height: 20),
 
+            const Center(
+              child: Text(
+                "Stay productive today 💪",
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}*/
+
+import 'package:flutter/material.dart';
+import 'package:flutter_application_1/views/habits.dart';
+import '../configs/colors.dart';
+
+class DashboardPage extends StatelessWidget {
+  const DashboardPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.backgroundBlue,
+      appBar: AppBar(
+        title: const Text("Dashboard"),
+        backgroundColor: AppColors.primaryBlue,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Welcome Back 👋",
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: AppColors.darkBlue,
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            Card(
+              child: ListTile(
+                leading: Image.asset("assets/task_icon.png", width: 30),
+                title: const Text("Today's Tasks"),
+                subtitle: const Text("View and manage your tasks"),
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            Card(
+              child: ListTile(
+                leading: Image.asset("assets/habit_icon.png", width: 30),
+                title: const Text("Daily Habits"),
+                subtitle: const Text("Track your habits"),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const HabitsPage()),
+                  );
+                },
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            Card(
+              child: ListTile(
+                leading: Image.asset("assets/profile_icon.png", width: 30),
+                title: const Text("Profile"),
+                subtitle: const Text("View your account"),
+              ),
+            ),
+
+            const SizedBox(height: 20),
             const Center(
               child: Text(
                 "Stay productive today 💪",

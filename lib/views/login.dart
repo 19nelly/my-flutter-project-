@@ -1016,7 +1016,7 @@ class _LoginScreenState extends State<LoginScreen> {
 }*/
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/configs/colors.dart';
+import 'package:flutter_application_1/views/signup.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -1133,6 +1133,7 @@ class _LoginScreenState extends State<LoginScreen> {
               /// LOGIN BUTTON (CONNECTED TO BACKEND)
               GestureDetector(
                 onTap: () async {
+                  // ignore: avoid_print
                   print("Login button clicked");
                   String email = emailController.text.trim();
                   String pass = passwordController.text.trim();
@@ -1144,7 +1145,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   try {
                     var url = Uri.parse(
-                      "http://192.169.100.115/habit_api/login.php",
+                      "http://192.168.100.108:80/habit_api/login.php",
                     );
 
                     var response = await http.post(

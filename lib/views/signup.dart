@@ -242,11 +242,13 @@ class _SignupScreenState extends State<SignupScreen> {
 
 //UPDATED CODE
 
-/*import 'dart:convert';
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/configs/colors.dart';
 import 'package:get/get.dart';
+
 import 'package:http/http.dart' as http;
+
+const Color primaryColor = Color(0xFF1976D2);
 
 TextEditingController fullnameController = TextEditingController();
 TextEditingController emailController = TextEditingController();
@@ -452,6 +454,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       },
                     );
 
+                    // ignore: avoid_print
                     print("SERVER RESPONSE: ${response.body}");
 
                     var data = json.decode(response.body);
@@ -465,6 +468,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     }
                   } catch (e) {
                     Get.snackbar("Error", "Server not reachable");
+                    // ignore: avoid_print
                     print(e);
                   }
                 },
@@ -517,9 +521,9 @@ class _SignupScreenState extends State<SignupScreen> {
       ),
     );
   }
-}*/
+}
 
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:flutter_application_1/configs/colors.dart';
 import 'package:get/get.dart';
 
@@ -771,4 +775,4 @@ class _SignupScreenState extends State<SignupScreen> {
       ),
     );
   }
-}
+}*/
