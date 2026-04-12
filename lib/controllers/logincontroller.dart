@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 /*import 'package:get/get.dart';
 
 class LoginController extends GetxController {
@@ -47,14 +49,14 @@ class LoginController extends GetxController {
   }
 }*/
 
-import 'package:get/get.dart';
+/*import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'dart:convert'
 
 class LoginController extends GetxController {
-  var isPasswordVisible = false.obs;
+  var isPasswordVisible = false.obs;*/
 
-  /*// 🔥 REAL LOGIN FUNCTION
+/*// 🔥 REAL LOGIN FUNCTION
   Future<bool> login(String email, String password) async {
     var url = Uri.parse("http://10.7.18.30/habit_api/login.php");
 
@@ -78,8 +80,8 @@ class LoginController extends GetxController {
     isPasswordVisible.value = !isPasswordVisible.value;
   }*/
 
-  // REAL LOGIN FUNCTION
-  Future<bool> login(String email, String password) async {
+// REAL LOGIN FUNCTION
+/*Future<bool> login(String email, String password) async {
     var url = Uri.parse(
       "http://192.168.100.108:80/habit_api/login.php",
     ); // your IP
@@ -102,4 +104,41 @@ class LoginController extends GetxController {
   }
 
   void togglePassword() {}
+}*/
+
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+class LoginController extends GetxController {
+  var isPasswordVisible = false.obs;
+
+  final String serverUrl = "http://10.147.116.185/habit_api";
+
+  void togglePassword() {
+    isPasswordVisible.value = !isPasswordVisible.value;
+  }
+
+  Future<bool> login(String email, String password) async {
+    try {
+      final url = Uri.parse("$serverUrl/login.php");
+      final response = await http.post(
+        url,
+        body: {"email": email, "password": password},
+      );
+
+      final data = json.decode(response.body);
+
+      if (data["success"] == 1) {
+        // Optionally save user info, e.g., user ID
+        // GetStorage().write('user_id', data['user_id']);
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print("Login error: $e");
+      return false;
+    }
+  }
 }

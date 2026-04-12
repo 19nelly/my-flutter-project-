@@ -36,29 +36,18 @@ import 'package:get/get.dart';*/
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/configs/routes.dart';
+import 'package:flutter_application_1/views/login.dart';
+import 'package:flutter_application_1/views/tasks.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get/get.dart';
-import 'package:flutter_application_1/configs/colors.dart';
 
 void main() {
-  List<GetPage<dynamic>>? routes;
   runApp(
     GetMaterialApp(
-      initialRoute: "/login",
-      getPages: routes, // Assuming AppRoutes has a static 'routes' variable
+      initialRoute: AppRoutes.login, // Changed from "/" to "/login"
+      getPages: AppRoutes.routes,
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: AppColors.primaryBlue,
-        scaffoldBackgroundColor: AppColors.backgroundBlue,
-        appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primaryBlue,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-          ),
-        ),
-      ),
+      // Removed 'home' property since we're using named routes
     ),
   );
 }

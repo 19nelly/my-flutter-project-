@@ -1,4 +1,8 @@
-/*import 'package:flutter/material.dart';
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class HabitsPage extends StatefulWidget {
   const HabitsPage({super.key});
@@ -8,7 +12,6 @@ class HabitsPage extends StatefulWidget {
 }
 
 class _HabitsPageState extends State<HabitsPage> {
-  // Categories
   final List<String> categories = [
     "Health",
     "Exercise",
@@ -19,141 +22,95 @@ class _HabitsPageState extends State<HabitsPage> {
   ];
 
   String selectedCategory = "Health";
-
   TextEditingController habitController = TextEditingController();
 
-  // Store habits
-  List<Map<String, String>> habits = [];
-
-  void addHabit() {
-    if (habitController.text.isEmpty) return;
-
-    setState(() {
-      habits.add({"name": habitController.text, "category": selectedCategory});
-    });
-
-    habitController.clear();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("My Habits"), centerTitle: true),
-
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-
-        child: Column(
-          children: [
-            /// CATEGORY DROPDOWN
-            DropdownButtonFormField<String>(
-              value: selectedCategory,
-              items: categories.map((category) {
-                return DropdownMenuItem(value: category, child: Text(category));
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  selectedCategory = value!;
-                });
-              },
-              decoration: InputDecoration(
-                labelText: "Select Category",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            /// HABIT INPUT
-            TextField(
-              controller: habitController,
-              decoration: InputDecoration(
-                hintText: "Enter habit",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 15),
-
-            /// ADD BUTTON
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: addHabit,
-                child: const Text("Add Habit"),
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            /// HABITS LIST
-            Expanded(
-              child: ListView.builder(
-                itemCount: habits.length,
-                itemBuilder: (context, index) {
-                  return Card(
-                    child: ListTile(
-                      leading: const Icon(Icons.check_circle_outline),
-                      title: Text(habits[index]["name"]!),
-                      subtitle: Text(habits[index]["category"]!),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}*/
-
-/*import 'package:flutter/material.dart';
-
-class HabitsPage extends StatefulWidget {
-  const HabitsPage({super.key});
-
-  @override
-  State<HabitsPage> createState() => _HabitsPageState();
-}
-
-class _HabitsPageState extends State<HabitsPage> {
-  // Categories
-  final List<String> categories = [
-    "Health",
-    "Exercise",
-    "Study",
-    "Work",
-    "Mindfulness",
-    "Personal",
-  ];
-
-  String selectedCategory = "Health";
-
-  TextEditingController habitController = TextEditingController();
-
-  // Store habits with done status
   List<Map<String, dynamic>> habits = [];
 
-  void addHabit() {
-    if (habitController.text.isEmpty) return;
+  // Replace with the actual logged-in user ID
+  int userId = 1;
 
-    setState(() {
-      habits.add({
-        "name": habitController.text,
-        "category": selectedCategory,
-        "done": false, // Toggle state
-      });
-    });
+  // Replace with your server URL
+  final String serverUrl =
+      "http://10.147.116.185"; // e.g., http://127.0.0.1:8000
 
-    habitController.clear();
+  @override
+  void initState() {
+    super.initState();
+    fetchHabits();
   }
 
+  // Fetch habits from backend
+  Future<void> fetchHabits() async {
+    try {
+      final url = Uri.parse("$serverUrl/get_habit.php?user_id=$userId");
+      final response = await http.get(url);
+      final data = json.decode(response.body);
+
+      if (data["success"] == 1) {
+        setState(() {
+          habits = List<Map<String, dynamic>>.from(
+            data["data"].map((habit) {
+              return {
+                "id": habit["id"],
+                "name": habit["name"],
+                "category": habit["category"],
+                "done": false, // for now, local only
+              };
+            }),
+          );
+        });
+      } else {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Error fetching habits")));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error: $e")));
+    }
+  }
+
+  // Add habit to backend
+  void addHabit() async {
+    if (habitController.text.isEmpty) return;
+
+    try {
+      final url = Uri.parse("$serverUrl/add_habit.php");
+      final response = await http.post(
+        url,
+        body: {
+          "user_id": userId.toString(),
+          "name": habitController.text,
+          "category": selectedCategory,
+        },
+      );
+
+      final data = json.decode(response.body);
+
+      if (data["success"] == 1) {
+        setState(() {
+          habits.add({
+            "id": data["habit_id"],
+            "name": habitController.text,
+            "category": selectedCategory,
+            "done": false,
+          });
+        });
+        habitController.clear();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error adding habit: ${data['error']}")),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error: $e")));
+    }
+  }
+
+  // Toggle habit done (local only)
   void toggleHabit(int index) {
     setState(() {
       habits[index]["done"] = !habits[index]["done"];
@@ -168,13 +125,16 @@ class _HabitsPageState extends State<HabitsPage> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            /// CATEGORY DROPDOWN
             DropdownButtonFormField<String>(
-              // ignore: deprecated_member_use
-              value: selectedCategory,
-              items: categories.map((category) {
-                return DropdownMenuItem(value: category, child: Text(category));
-              }).toList(),
+              initialValue: selectedCategory,
+              items: categories
+                  .map(
+                    (category) => DropdownMenuItem(
+                      value: category,
+                      child: Text(category),
+                    ),
+                  )
+                  .toList(),
               onChanged: (value) {
                 setState(() {
                   selectedCategory = value!;
@@ -187,10 +147,7 @@ class _HabitsPageState extends State<HabitsPage> {
                 ),
               ),
             ),
-
             const SizedBox(height: 20),
-
-            /// HABIT INPUT
             TextField(
               controller: habitController,
               decoration: InputDecoration(
@@ -200,10 +157,7 @@ class _HabitsPageState extends State<HabitsPage> {
                 ),
               ),
             ),
-
             const SizedBox(height: 15),
-
-            /// ADD BUTTON
             SizedBox(
               width: double.infinity,
               height: 50,
@@ -212,138 +166,27 @@ class _HabitsPageState extends State<HabitsPage> {
                 child: const Text("Add Habit"),
               ),
             ),
-
-            const SizedBox(height: 20),
-
-            /// HABITS LIST WITH TOGGLE
-            Expanded(
-              child: ListView.builder(
-                itemCount: habits.length,
-                itemBuilder: (context, index) {
-                  final habit = habits[index];
-                  return Card(
-                    child: ListTile(
-                      leading: Checkbox(
-                        value: habit["done"],
-                        onChanged: (value) => toggleHabit(index),
-                      ),
-                      title: Text(
-                        habit["name"],
-                        style: TextStyle(
-                          decoration: habit["done"]
-                              ? TextDecoration.lineThrough
-                              : TextDecoration.none,
-                        ),
-                      ),
-                      subtitle: Text(habit["category"]),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}*/
-
-import 'package:flutter/material.dart';
-import 'package:flutter_application_1/configs/colors.dart';
-// ignore: unused_import
-import 'package:confetti/confetti.dart';
-import 'package:flutter_application_1/controllers/habitscontroller.dart';
-
-class HabitsPage extends StatefulWidget {
-  const HabitsPage({super.key});
-
-  @override
-  State<HabitsPage> createState() => _HabitsPageState();
-}
-
-class _HabitsPageState extends State<HabitsPage> {
-  final HabitController controller = HabitController();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundBlue,
-      appBar: AppBar(
-        title: const Text("My Habits"),
-        backgroundColor: AppColors.primaryBlue,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            DropdownButtonFormField<String>(
-              // ignore: deprecated_member_use
-              value: controller.selectedCategory,
-              items: controller.categories
-                  .map((c) => DropdownMenuItem(value: c, child: Text(c)))
-                  .toList(),
-              onChanged: (value) =>
-                  controller.changeCategory(value!, () => setState(() {})),
-              decoration: InputDecoration(
-                labelText: "Select Category",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: controller.habitController,
-              decoration: InputDecoration(
-                hintText: "Enter habit",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-              ),
-            ),
-            const SizedBox(height: 15),
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: () => controller.addHabit(() => setState(() {})),
-                child: const Text("Add Habit"),
-              ),
-            ),
             const SizedBox(height: 20),
             Expanded(
-              child: ListView.builder(
-                itemCount: controller.habits.length,
-                itemBuilder: (context, index) {
-                  final habit = controller.habits[index];
-                  return Card(
-                    child: ListTile(
-                      leading: Image.asset("assets/habit_icon.png", width: 30),
-                      title: Text(
-                        habit["name"],
-                        style: TextStyle(
-                          color: AppColors.darkBlue,
-                          decoration: habit["done"]
-                              ? TextDecoration.lineThrough
-                              : null,
-                        ),
-                      ),
-                      subtitle: Text(
-                        habit["category"],
-                        style: const TextStyle(color: AppColors.primaryBlue),
-                      ),
-                      trailing: Checkbox(
-                        activeColor: AppColors.primaryBlue,
-                        value: habit["done"],
-                        onChanged: (value) => controller.toggleHabit(
-                          index,
-                          () => setState(() {}),
-                        ),
-                      ),
+              child: habits.isEmpty
+                  ? const Center(child: Text("No habits yet"))
+                  : ListView.builder(
+                      itemCount: habits.length,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          child: ListTile(
+                            leading: Checkbox(
+                              value: habits[index]["done"],
+                              onChanged: (value) {
+                                toggleHabit(index);
+                              },
+                            ),
+                            title: Text(habits[index]["name"]),
+                            subtitle: Text(habits[index]["category"]),
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
           ],
         ),
