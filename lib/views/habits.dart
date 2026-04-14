@@ -31,7 +31,7 @@ class _HabitsPageState extends State<HabitsPage> {
 
   // Replace with your server URL
   final String serverUrl =
-      "http://10.147.116.185"; // e.g., http://127.0.0.1:8000
+      "http://192.168.100.114/habit_api"; // e.g., http://127.0.0.1:8000
 
   @override
   void initState() {

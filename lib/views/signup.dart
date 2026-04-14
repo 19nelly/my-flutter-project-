@@ -932,7 +932,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
                   try {
                     var url = Uri.parse(
-                      "http://10.147.116.185/habit_api/register.php",
+                      "http://192.168.100.114/habit_api/register.php",
                     );
                     var response = await http.post(
                       url,

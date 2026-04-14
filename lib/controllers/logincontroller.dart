@@ -113,7 +113,7 @@ import 'dart:convert';
 class LoginController extends GetxController {
   var isPasswordVisible = false.obs;
 
-  final String serverUrl = "http://10.147.116.185/habit_api";
+  final String serverUrl = "http://192.168.100.114/habit_api";
 
   void togglePassword() {
     isPasswordVisible.value = !isPasswordVisible.value;

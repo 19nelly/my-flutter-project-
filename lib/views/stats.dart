@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:http/http.dart' as http;
@@ -12,7 +14,7 @@ class StatsPage extends StatefulWidget {
 
 class _StatsPageState extends State<StatsPage> {
   int userId = 1;
-  final String serverUrl = "http://10.147.116.185/habit_api";
+  final String serverUrl = "http://192.168.100.114/habit_api";
 
   List<double> weeklyData = [0, 0, 0, 0, 0, 0, 0];
   int completion = 0;

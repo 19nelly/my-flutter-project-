@@ -149,7 +149,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class TasksController {
-  final String serverUrl = "http://10.147.116.185/habit_api";
+  final String serverUrl = "http://192.168.100.114/habit_api";
 
   final TextEditingController taskController = TextEditingController();
 
@@ -215,6 +215,7 @@ class TasksController {
 
       await http.post(
         url,
+
         body: {"task_id": taskId.toString(), "completed": value ? "1" : "0"},
       );
 
