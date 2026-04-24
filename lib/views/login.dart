@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 //import 'package:flutter/material.dart';
 //import 'package:flutter_application_1/configs/colors.dart';
 /*import 'package:flutter_application_1/controllers/logincontroller.dart';
@@ -175,7 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }*/
 
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../configs/routes.dart';
 
@@ -291,6 +293,184 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: Color.fromARGB(255, 187, 116, 116),
                       fontSize: 16,
                     ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("Don't have an account? "),
+                  GestureDetector(
+                    onTap: () => Get.toNamed(AppRoutes.signup),
+                    child: Text(
+                      "Signup",
+                      style: TextStyle(
+                        color: primaryColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLabel(String text) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Text(text, style: const TextStyle(fontWeight: FontWeight.w700)),
+    );
+  }
+}*/
+
+import 'package:flutter/material.dart';
+import 'package:flutter_application_1/views/signup.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../configs/routes.dart';
+
+// ✅ Dark blue primary color
+const Color primaryColor = Color(0xFF0D47A1);
+
+TextEditingController usernameController = TextEditingController();
+TextEditingController emailController = TextEditingController();
+TextEditingController passwordController = TextEditingController();
+
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  bool isPasswordVisible = false;
+
+  final String serverUrl =
+      "http://10.147.116.185/habit_api/login.php"; // your IP and endpoint
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Image.asset('assets/login_bg.jpeg', height: 150, width: 200),
+              const SizedBox(height: 20),
+
+              _buildLabel("Enter username"),
+              TextField(
+                controller: usernameController,
+                decoration: InputDecoration(
+                  hintText: "Enter username",
+                  prefixIcon: const Icon(Icons.person),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              _buildLabel("Enter email"),
+              TextField(
+                controller: emailController,
+                decoration: InputDecoration(
+                  hintText: "Use email",
+                  prefixIcon: const Icon(Icons.email),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              _buildLabel("Enter Password"),
+              TextField(
+                controller: passwordController,
+                obscureText: !isPasswordVisible,
+                decoration: InputDecoration(
+                  hintText: "Enter password",
+                  prefixIcon: const Icon(Icons.lock),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      isPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                    onPressed: () =>
+                        setState(() => isPasswordVisible = !isPasswordVisible),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              /// 🔥 REAL LOGIN BUTTON (CONNECTED TO DATABASE)
+              GestureDetector(
+                onTap: () async {
+                  String fullname = fullnameController.text.trim();
+                  String email = emailController.text.trim();
+                  String pass = passwordController.text.trim();
+
+                  if (fullname.isEmpty || email.isEmpty || pass.isEmpty) {
+                    Get.snackbar("Error", "Please fill all fields");
+                    return;
+                  }
+
+                  try {
+                    var response = await http.post(
+                      Uri.parse("http://192.168.100.115/habit_api/login.php"),
+                      body: {
+                        'fullname': fullnameController.text.trim(),
+                        'email': emailController.text.trim(),
+                        'password': passwordController.text.trim(),
+                      },
+                    );
+
+                    var data = json.decode(response.body);
+
+                    if (data["success"] == 1) {
+                      int userId = data["user_id"];
+
+                      print("USER ID: $userId");
+
+                      Get.snackbar("Success", "Login successful");
+
+                      Get.offAllNamed(AppRoutes.homescreen);
+                    } else {
+                      Get.snackbar("Login Failed", "Invalid email or password");
+                    }
+                  } catch (e) {
+                    Get.snackbar("Error", "Server not reachable");
+                    print(e);
+                  }
+                },
+                child: Container(
+                  height: 50,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: primaryColor,
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  child: const Text(
+                    "Login",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
               ),

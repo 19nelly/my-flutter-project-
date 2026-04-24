@@ -14,7 +14,7 @@ class StatsPage extends StatefulWidget {
 
 class _StatsPageState extends State<StatsPage> {
   int userId = 1;
-  final String serverUrl = "http://192.168.100.114/habit_api";
+  final String serverUrl = "http://192.168.100.116/habit_api";
 
   List<double> weeklyData = [0, 0, 0, 0, 0, 0, 0];
   int completion = 0;

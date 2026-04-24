@@ -112,7 +112,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class HabitController {
-  final String serverUrl = "http://10.147.116.185/habit_api";
+  final String serverUrl =
+      "http://192.168.100.116/habit_api"; // your IP and endpoint
 
   // Categories
   final List<String> categories = [
@@ -132,7 +133,7 @@ class HabitController {
 
   int userId = 1;
 
-  // 📥 FETCH HABITS FROM DATABASE
+  // 📥 FETCH HABITS (WITH REAL DONE STATE)
   Future<void> fetchHabits(VoidCallback refreshUI) async {
     try {
       final url = Uri.parse("$serverUrl/get_habit.php?user_id=$userId");
@@ -147,7 +148,7 @@ class HabitController {
               "id": habit["id"],
               "name": habit["name"],
               "category": habit["category"],
-              "done": false, // will update later
+              "done": habit["done"] == 1, // 🔥 REAL STATE FROM DB
             };
           }),
         );
@@ -180,15 +181,10 @@ class HabitController {
       final data = json.decode(response.body);
 
       if (data["success"] == 1) {
-        habits.add({
-          "id": data["habit_id"] ?? 0,
-          "name": habitController.text,
-          "category": selectedCategory,
-          "done": false,
-        });
-
         habitController.clear();
-        refreshUI();
+
+        // 🔥 REFRESH FROM DB INSTEAD OF FAKE ADD
+        await fetchHabits(refreshUI);
       } else {
         print("Failed to add habit");
       }
@@ -197,7 +193,7 @@ class HabitController {
     }
   }
 
-  // 🔥 TOGGLE HABIT (REAL DAILY TRACKING)
+  // 🔥 TOGGLE HABIT (UPDATED WITH REFRESH)
   Future<void> toggleHabit(int habitId, VoidCallback refreshUI) async {
     try {
       await http.post(
@@ -205,14 +201,8 @@ class HabitController {
         body: {"habit_id": habitId.toString(), "user_id": userId.toString()},
       );
 
-      // update local UI instantly
-      for (var habit in habits) {
-        if (habit["id"] == habitId) {
-          habit["done"] = !habit["done"];
-        }
-      }
-
-      refreshUI();
+      // 🔥 ALWAYS SYNC WITH DATABASE
+      await fetchHabits(refreshUI);
     } catch (e) {
       print("Toggle habit error: $e");
     }

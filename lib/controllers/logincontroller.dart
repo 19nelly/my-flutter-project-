@@ -106,6 +106,7 @@ class LoginController extends GetxController {
   void togglePassword() {}
 }*/
 
+import 'package:flutter_application_1/views/signup.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -113,18 +114,23 @@ import 'dart:convert';
 class LoginController extends GetxController {
   var isPasswordVisible = false.obs;
 
-  final String serverUrl = "http://192.168.100.114/habit_api";
+  final String serverUrl =
+      "http://192.168.100.116/habit_api/login.php"; // your IP and endpoint
 
   void togglePassword() {
     isPasswordVisible.value = !isPasswordVisible.value;
   }
 
-  Future<bool> login(String email, String password) async {
+  Future<bool> login(String fullname, String email, String password) async {
     try {
-      final url = Uri.parse("$serverUrl/login.php");
       final response = await http.post(
-        url,
-        body: {"email": email, "password": password},
+        Uri.parse("http://192.168.100.115/habit_api/login.php"),
+
+        body: {
+          "fullname": fullnameController.text.trim(),
+          "email": emailController.text.trim(),
+          "password": passwordController.text.trim(),
+        },
       );
 
       final data = json.decode(response.body);

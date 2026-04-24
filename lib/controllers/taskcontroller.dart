@@ -149,7 +149,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class TasksController {
-  final String serverUrl = "http://192.168.100.114/habit_api";
+  final String serverUrl =
+      "http://192.168.100.116/habit_api"; // your IP and endpoint
 
   final TextEditingController taskController = TextEditingController();
 
